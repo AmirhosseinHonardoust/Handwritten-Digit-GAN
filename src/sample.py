@@ -85,5 +85,5 @@ def main() -> None:
     print("[OK] Samples and interpolation saved.")
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: no cover
     main()

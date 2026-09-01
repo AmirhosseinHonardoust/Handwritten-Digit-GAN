@@ -256,5 +256,5 @@ def main() -> None:
     print("[OK] Training finished. Models & samples saved.")
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: no cover
     main()

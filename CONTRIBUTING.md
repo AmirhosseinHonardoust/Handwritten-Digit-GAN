@@ -21,13 +21,19 @@ Run the same quality gate CI runs:
 ruff check --select E,F,I,B,SIM,UP src/ tests/
 black --check src/ tests/
 mypy src/
-pytest -v
+pytest -v --cov=src --cov-report=term-missing
 ```
 `black` (without `--check`) and `ruff check --fix` will auto-fix most formatting/lint issues.
 
+The fast suite (default `pytest`) uses synthetic data and requires no network
+access; it enforces 90%+ coverage of `src/`. A separate slow suite exercises
+the real MNIST download path and is skipped by default — run it explicitly
+with `pytest -v -m slow` (requires network; CI runs it automatically).
+
 ## Guidelines
 - Keep changes minimal and focused; avoid unrelated renames or file moves.
-- Add or update tests for any behavior change in `src/`.
+- Add or update tests for any behavior change in `src/` — the fast suite
+  should stay at 90%+ coverage.
 - Don't commit datasets, model checkpoints, or generated images — `data/` and
   `outputs/` are gitignored on purpose.
 - Match the existing code style (type hints, docstrings on public functions).
