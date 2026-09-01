@@ -264,9 +264,10 @@ digit-gan-sample --model outputs/G_last.pth --dataset mnist --z-dim 100 --outdir
 
 <div align="center">
 
-![Training curves](https://github.com/user-attachments/assets/69849337-ab41-4d84-8976-fc0ebefd457d)
-
-The training curves chart tracks Generator and Discriminator loss across every iteration. Neither loss collapsing to zero nor diverging to infinity is the goal, healthy adversarial training shows both losses oscillating and roughly balancing each other as the two networks compete.
+| Training Curves |
+|---|
+| ![Training curves](https://github.com/user-attachments/assets/69849337-ab41-4d84-8976-fc0ebefd457d) |
+| The training curves chart tracks Generator and Discriminator loss across every iteration. Neither loss collapsing to zero nor diverging to infinity is the goal, healthy adversarial training shows both losses oscillating and roughly balancing each other as the two networks compete. |
 
 </div>
 
