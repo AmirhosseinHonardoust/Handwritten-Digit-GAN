@@ -23,7 +23,7 @@ def test_discriminator_mnist_output_shape():
     x = torch.randn(4, 1, 28, 28)
     out = D(x)
     assert out.shape == (4, 1)
-    assert out.min() >= 0.0 and out.max() <= 1.0  # Sigmoid output range
+    assert torch.isfinite(out).all()  # raw logits, unbounded but finite
 
 
 def test_discriminator_cifar_output_shape():

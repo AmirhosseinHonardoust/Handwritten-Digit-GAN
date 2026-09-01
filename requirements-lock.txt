@@ -1,7 +1,8 @@
 # Full resolved dependency lock (direct + transitive), generated from
 # `pip install -r requirements.txt -r requirements-dev.txt` on Linux x86_64,
-# CPython 3.12, and verified against the quality gate (ruff/black/mypy/pytest)
-# before being committed. Regenerate with:
+# CPython 3.11 (matching the version CI pins in .github/workflows/ci.yml), and
+# verified against the quality gate (ruff/black/mypy/pytest) before being
+# committed. Regenerate with:
 #
 #   pip install -r requirements.txt -r requirements-dev.txt
 #   pip freeze > requirements-lock.txt

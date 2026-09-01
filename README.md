@@ -55,7 +55,8 @@ GAN-MNIST/
 │  └─ interpolation.png
 ├─ src/
 │  ├─ train_gan.py      # Training script
-│  └─ sample.py         # Generate samples from trained model
+│  ├─ sample.py         # Generate samples from trained model
+│  └─ viz.py            # Shared image-grid plotting helper
 ├─ tests/                # Unit tests (pytest)
 ├─ .github/workflows/    # CI (lint, type-check, tests)
 └─ README.md
@@ -93,8 +94,10 @@ python src/sample.py --model outputs/G_last.pth --dataset mnist --outdir outputs
 
 ## Recommendations
 - Train for more epochs (50–100) for higher quality images.
-- Try Label Smoothing or alternative loss functions (e.g., BCEWithLogitsLoss).
+- Try one-sided label smoothing for additional training stability.
 - Experiment with CIFAR-10 for color image generation.
+- On a machine with few CPU cores, pass `--num-workers 0` to `train_gan.py` to
+  avoid DataLoader worker-count warnings.
 
 ---
 
@@ -111,5 +114,12 @@ pytest -v --cov=src --cov-report=term-missing
 The fast suite runs on synthetic data (no network, 90%+ coverage enforced).
 A separate suite exercises the real MNIST download path; run it with
 `pytest -v -m slow` (needs network) — CI runs it on every push automatically.
+
+Optionally, install [pre-commit](https://pre-commit.com) hooks to run
+ruff/black/mypy automatically before each commit:
+```bash
+pip install pre-commit
+pre-commit install
+```
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
