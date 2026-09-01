@@ -106,7 +106,10 @@ pip install -r requirements-dev.txt
 ruff check --select E,F,I,B,SIM,UP src/ tests/
 black --check src/ tests/
 mypy src/
-pytest -v
+pytest -v --cov=src --cov-report=term-missing
 ```
+The fast suite runs on synthetic data (no network, 90%+ coverage enforced).
+A separate suite exercises the real MNIST download path; run it with
+`pytest -v -m slow` (needs network) — CI runs it on every push automatically.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.

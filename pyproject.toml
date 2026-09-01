@@ -26,3 +26,14 @@ check_untyped_defs = true
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+markers = [
+    "slow: integration tests that need network access (deselected by default)",
+]
+addopts = "-m 'not slow'"
+
+[tool.coverage.run]
+source = ["src"]
+
+[tool.coverage.report]
+show_missing = true
+fail_under = 90

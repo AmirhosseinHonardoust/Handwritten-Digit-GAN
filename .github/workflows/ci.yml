@@ -28,5 +28,8 @@ jobs:
       - name: Mypy
         run: mypy src/
 
-      - name: Pytest
-        run: pytest -v
+      - name: Pytest (fast suite + coverage)
+        run: pytest -v --cov=src --cov-report=term-missing
+
+      - name: Pytest (slow integration suite, needs network)
+        run: pytest -v -m slow
