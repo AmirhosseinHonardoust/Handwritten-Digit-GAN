@@ -204,7 +204,18 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     ap.add_argument("--lr", type=float, default=2e-4)
     ap.add_argument("--outdir", type=str, default="outputs")
     ap.add_argument("--seed", type=int, default=42)
-    return ap.parse_args(argv)
+    args = ap.parse_args(argv)
+
+    if args.epochs < 1:
+        ap.error(f"--epochs must be >= 1, got {args.epochs}")
+    if args.batch_size < 1:
+        ap.error(f"--batch-size must be >= 1, got {args.batch_size}")
+    if args.z_dim < 1:
+        ap.error(f"--z-dim must be >= 1, got {args.z_dim}")
+    if args.lr <= 0:
+        ap.error(f"--lr must be > 0, got {args.lr}")
+
+    return args
 
 
 def main() -> None:

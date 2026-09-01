@@ -1,0 +1,57 @@
+# Full resolved dependency lock (direct + transitive), generated from
+# `pip install -r requirements.txt -r requirements-dev.txt` on Linux x86_64,
+# CPython 3.12, and verified against the quality gate (ruff/black/mypy/pytest)
+# before being committed. Regenerate with:
+#
+#   pip install -r requirements.txt -r requirements-dev.txt
+#   pip freeze > requirements-lock.txt
+#
+# This is what CI resolves to; it's for exact reproducibility, not a
+# replacement for requirements.txt / requirements-dev.txt. The nvidia-cu12-*
+# entries are Linux-only CUDA runtime wheels pulled in by torch even for
+# CPU-only use on this platform — on macOS/Windows, install from
+# requirements.txt / requirements-dev.txt directly instead of this lockfile.
+
+black==24.8.0
+click==8.3.1
+contourpy==1.3.3
+cycler==0.12.1
+filelock==3.32.5
+fonttools==4.62.1
+fsspec==2026.7.0
+iniconfig==2.3.0
+Jinja2==3.1.6
+kiwisolver==1.5.0
+MarkupSafe==3.0.3
+matplotlib==3.8.4
+mpmath==1.3.0
+mypy==1.11.2
+mypy_extensions==1.1.0
+networkx==3.6.1
+numpy==1.26.4
+nvidia-cublas-cu12==12.1.3.1
+nvidia-cuda-cupti-cu12==12.1.105
+nvidia-cuda-nvrtc-cu12==12.1.105
+nvidia-cuda-runtime-cu12==12.1.105
+nvidia-cudnn-cu12==8.9.2.26
+nvidia-cufft-cu12==11.0.2.54
+nvidia-curand-cu12==10.3.2.106
+nvidia-cusolver-cu12==11.4.5.107
+nvidia-cusparse-cu12==12.1.0.106
+nvidia-nccl-cu12==2.19.3
+nvidia-nvjitlink-cu12==12.9.86
+nvidia-nvtx-cu12==12.1.105
+packaging==26.0
+pathspec==1.0.4
+pillow==10.3.0
+platformdirs==4.9.4
+pluggy==1.6.0
+pyparsing==3.3.2
+pytest==8.3.3
+python-dateutil==2.9.0.post0
+ruff==0.6.9
+six==1.17.0
+sympy==1.14.0
+torch==2.2.2
+torchvision==0.17.2
+tqdm==4.66.4
