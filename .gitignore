@@ -1,0 +1,22 @@
+# Datasets (auto-downloaded by torchvision)
+data/
+
+# Training artifacts (checkpoints, generated images, plots)
+outputs/
+
+# Python
+__pycache__/
+*.pyc
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+*.egg-info/
+
+# Virtual environments
+.venv/
+venv/
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
