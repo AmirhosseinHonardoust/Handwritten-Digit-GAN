@@ -19,7 +19,8 @@ import pytest
 import torch
 from torch.utils.data import Subset
 
-import train_gan
+from digit_gan import train as train_gan
+from digit_gan.models import Generator
 
 
 @pytest.mark.slow
@@ -60,7 +61,7 @@ def test_integration_train_real_mnist_subset(tmp_path, monkeypatch):
 
     # Checkpoint must load back and produce a valid-shaped sample from real data.
     state = torch.load(outdir / "G_last.pth", weights_only=True)
-    G2 = train_gan.Generator(z_dim=10, img_ch=img_ch, img_size=img_size)
+    G2 = Generator(z_dim=10, img_ch=img_ch, img_size=img_size)
     G2.load_state_dict(state)
     G2.eval()
     with torch.no_grad():

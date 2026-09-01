@@ -1,6 +1,6 @@
 import torch
 
-from viz import save_grid_image
+from digit_gan.viz import save_grid_image
 
 
 def test_save_grid_image_writes_file(tmp_path):

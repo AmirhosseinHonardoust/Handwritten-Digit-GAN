@@ -7,6 +7,7 @@ Thanks for considering a contribution to Handwritten Digit GAN!
 python -m venv .venv
 source .venv/bin/activate  # Windows: .venv\Scripts\activate
 pip install -r requirements-dev.txt
+pip install -e . --no-deps   # makes `digit_gan` importable + installs the CLI entry points
 ```
 
 For an exact reproduction of the environment CI uses (Linux, pinned transitive

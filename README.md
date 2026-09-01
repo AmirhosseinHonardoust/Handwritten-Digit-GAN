@@ -54,9 +54,12 @@ GAN-MNIST/
 │  ├─ samples_grid.png
 │  └─ interpolation.png
 ├─ src/
-│  ├─ train_gan.py      # Training script
-│  ├─ sample.py         # Generate samples from trained model
-│  └─ viz.py            # Shared image-grid plotting helper
+│  └─ digit_gan/        # Installable package (pip install -e .)
+│     ├─ models.py      # Generator / Discriminator
+│     ├─ data.py        # Dataset loading + device selection
+│     ├─ train.py       # Training CLI (digit-gan-train)
+│     ├─ sample.py      # Sampling CLI (digit-gan-sample)
+│     └─ viz.py         # Shared image-grid plotting helper
 ├─ tests/                # Unit tests (pytest)
 ├─ .github/workflows/    # CI (lint, type-check, tests)
 └─ README.md
@@ -74,20 +77,23 @@ python -m venv .venv
 # Linux/macOS
 source .venv/bin/activate
 pip install -r requirements.txt
+pip install -e . --no-deps   # installs the `digit-gan-train` / `digit-gan-sample` CLIs
 ```
 
 ---
 
 ## Train the GAN
 ```bash
-python src/train_gan.py --dataset mnist --epochs 20 --batch-size 128 --z-dim 100 --outdir outputs
+digit-gan-train --dataset mnist --epochs 20 --batch-size 128 --z-dim 100 --outdir outputs
+# or, without installing the CLI: python -m digit_gan.train --dataset mnist ...
 ```
 
 ---
 
 ## Generate Samples
 ```bash
-python src/sample.py --model outputs/G_last.pth --dataset mnist --outdir outputs
+digit-gan-sample --model outputs/G_last.pth --dataset mnist --outdir outputs
+# or: python -m digit_gan.sample --model outputs/G_last.pth --dataset mnist --outdir outputs
 ```
 
 ---
@@ -106,6 +112,7 @@ python src/sample.py --model outputs/G_last.pth --dataset mnist --outdir outputs
 Install dev tooling and run the local quality gate (matches CI):
 ```bash
 pip install -r requirements-dev.txt
+pip install -e . --no-deps
 ruff check --select E,F,I,B,SIM,UP src/ tests/
 black --check src/ tests/
 mypy src/
