@@ -1,5 +1,8 @@
 # Handwritten Digit GAN
 
+[![CI](https://github.com/AmirhosseinHonardoust/Handwritten-Digit-GAN/actions/workflows/ci.yml/badge.svg)](https://github.com/AmirhosseinHonardoust/Handwritten-Digit-GAN/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 A PyTorch implementation of a simple Deep Convolutional GAN (DCGAN) trained on the MNIST dataset to generate realistic handwritten digits. The project includes training scripts, sample generation, interpolation in the latent space, and visualizations of training dynamics.
 
 This project builds and trains a GAN from scratch to learn the distribution of handwritten digits (MNIST). The **Generator** learns to produce fake digit images from random noise, while the **Discriminator** learns to distinguish between real and fake samples. After training, the model can generate entirely new, human-like handwritten digits.
@@ -42,8 +45,8 @@ Generator and Discriminator losses during training:
 ## Project Structure
 ```
 GAN-MNIST/
-├─ data/                # MNIST dataset (auto-downloaded)
-├─ outputs/             # Saved models, images, and plots
+├─ data/                # MNIST dataset (auto-downloaded, gitignored)
+├─ outputs/             # Saved models, images, and plots (generated, gitignored)
 │  ├─ samples/          # Generated samples per epoch
 │  ├─ G_last.pth        # Generator weights
 │  ├─ D_last.pth        # Discriminator weights
@@ -53,8 +56,12 @@ GAN-MNIST/
 ├─ src/
 │  ├─ train_gan.py      # Training script
 │  └─ sample.py         # Generate samples from trained model
+├─ tests/                # Unit tests (pytest)
+├─ .github/workflows/    # CI (lint, type-check, tests)
 └─ README.md
 ```
+`data/` and `outputs/` are generated locally by the scripts below and are not
+committed to the repository (see `.gitignore`).
 
 ---
 
@@ -88,3 +95,18 @@ python src/sample.py --model outputs/G_last.pth --dataset mnist --outdir outputs
 - Train for more epochs (50–100) for higher quality images.
 - Try Label Smoothing or alternative loss functions (e.g., BCEWithLogitsLoss).
 - Experiment with CIFAR-10 for color image generation.
+
+---
+
+## Development
+
+Install dev tooling and run the local quality gate (matches CI):
+```bash
+pip install -r requirements-dev.txt
+ruff check --select E,F,I,B,SIM,UP src/ tests/
+black --check src/ tests/
+mypy src/
+pytest -v
+```
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
