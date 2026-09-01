@@ -9,12 +9,10 @@ from __future__ import annotations
 import argparse
 import os
 
-import matplotlib.pyplot as plt
-import numpy as np
 import torch
-from torchvision import utils as vutils
 
 from train_gan import Generator
+from viz import save_grid_image
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
@@ -46,14 +44,8 @@ def save_random_grid(G: Generator, z_dim: int, outdir: str) -> None:
     z = torch.randn(64, z_dim, 1, 1, device=dev)
     with torch.no_grad():
         samples = G(z).cpu()
-    grid = vutils.make_grid(samples, nrow=8, normalize=True, value_range=(-1, 1))
-    plt.figure(figsize=(6, 6))
-    plt.axis("off")
-    plt.title("Random Samples")
-    plt.imshow(np.transpose(grid.numpy(), (1, 2, 0)))
-    plt.tight_layout()
-    plt.savefig(os.path.join(outdir, "samples_grid.png"), dpi=160)
-    plt.close()
+    outpath = os.path.join(outdir, "samples_grid.png")
+    save_grid_image(samples, outpath, title="Random Samples", nrow=8)
 
 
 def save_interpolation(G: Generator, z_dim: int, outdir: str) -> None:
@@ -64,14 +56,8 @@ def save_interpolation(G: Generator, z_dim: int, outdir: str) -> None:
     z_interp = (1 - alphas) * z1 + alphas * z2
     with torch.no_grad():
         imgs = G(z_interp).cpu()
-    grid = vutils.make_grid(imgs, nrow=10, normalize=True, value_range=(-1, 1))
-    plt.figure(figsize=(12, 2))
-    plt.axis("off")
-    plt.title("Latent Interpolation")
-    plt.imshow(np.transpose(grid.numpy(), (1, 2, 0)))
-    plt.tight_layout()
-    plt.savefig(os.path.join(outdir, "interpolation.png"), dpi=160)
-    plt.close()
+    outpath = os.path.join(outdir, "interpolation.png")
+    save_grid_image(imgs, outpath, title="Latent Interpolation", nrow=10, figsize=(12, 2))
 
 
 def main() -> None:

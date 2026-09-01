@@ -25,6 +25,10 @@ pytest -v --cov=src --cov-report=term-missing
 ```
 `black` (without `--check`) and `ruff check --fix` will auto-fix most formatting/lint issues.
 
+Optionally, run `pip install pre-commit && pre-commit install` once to have
+ruff/black/mypy run automatically on each commit (config in
+`.pre-commit-config.yaml`).
+
 The fast suite (default `pytest`) uses synthetic data and requires no network
 access; it enforces 90%+ coverage of `src/`. A separate slow suite exercises
 the real MNIST download path and is skipped by default — run it explicitly

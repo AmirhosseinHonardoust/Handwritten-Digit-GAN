@@ -27,7 +27,7 @@ def test_train_one_epoch_runs_and_updates_weights():
     dev = device()
     G = Generator(z_dim=10, img_ch=1, img_size=28).to(dev)
     D = Discriminator(img_ch=1, img_size=28).to(dev)
-    crit = nn.BCELoss()
+    crit = nn.BCEWithLogitsLoss()
     optG = torch.optim.Adam(G.parameters(), lr=2e-4, betas=(0.5, 0.999))
     optD = torch.optim.Adam(D.parameters(), lr=2e-4, betas=(0.5, 0.999))
     loader = _tiny_loader()
@@ -67,13 +67,17 @@ def test_parse_args_defaults():
     assert args.batch_size == 128
     assert args.z_dim == 100
     assert args.seed == 42
+    assert args.num_workers == 2
 
 
 def test_parse_args_overrides():
-    args = parse_args(["--dataset", "cifar10", "--epochs", "2", "--batch-size", "16"])
+    args = parse_args(
+        ["--dataset", "cifar10", "--epochs", "2", "--batch-size", "16", "--num-workers", "0"]
+    )
     assert args.dataset == "cifar10"
     assert args.epochs == 2
     assert args.batch_size == 16
+    assert args.num_workers == 0
 
 
 @pytest.mark.parametrize(
@@ -86,6 +90,7 @@ def test_parse_args_overrides():
         ["--z-dim", "0"],
         ["--lr", "0"],
         ["--lr", "-0.1"],
+        ["--num-workers", "-1"],
     ],
 )
 def test_parse_args_rejects_invalid_values(bad_args):
@@ -98,7 +103,7 @@ def test_train_one_epoch_cifar10_shapes_and_updates():
     dev = device()
     G = Generator(z_dim=10, img_ch=3, img_size=32).to(dev)
     D = Discriminator(img_ch=3, img_size=32).to(dev)
-    crit = nn.BCELoss()
+    crit = nn.BCEWithLogitsLoss()
     optG = torch.optim.Adam(G.parameters(), lr=2e-4, betas=(0.5, 0.999))
     optD = torch.optim.Adam(D.parameters(), lr=2e-4, betas=(0.5, 0.999))
 

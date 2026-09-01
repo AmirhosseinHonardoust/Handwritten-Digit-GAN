@@ -16,8 +16,9 @@ import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader, Dataset
 from torchvision import datasets, transforms
-from torchvision import utils as vutils
 from tqdm import tqdm
+
+from viz import save_grid_image
 
 
 class Generator(nn.Module):
@@ -73,7 +74,6 @@ class Discriminator(nn.Module):
                 nn.LeakyReLU(0.2, inplace=True),
                 nn.Flatten(),
                 nn.Linear((base * 2) * 7 * 7, 1),
-                nn.Sigmoid(),
             )
         else:
             self.net = nn.Sequential(
@@ -87,10 +87,10 @@ class Discriminator(nn.Module):
                 nn.LeakyReLU(0.2, inplace=True),
                 nn.Flatten(),
                 nn.Linear((base * 4) * 4 * 4, 1),
-                nn.Sigmoid(),
             )
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
+        """Return raw logits (no sigmoid); pair with ``nn.BCEWithLogitsLoss``."""
         return self.net(x)
 
 
@@ -180,14 +180,8 @@ def train_one_epoch(
 def save_epoch_samples(G: Generator, fixed_noise: torch.Tensor, outdir: str, epoch: int) -> None:
     with torch.no_grad():
         samples = G(fixed_noise).cpu()
-    grid = vutils.make_grid(samples, nrow=8, normalize=True, value_range=(-1, 1))
-    plt.figure(figsize=(6, 6))
-    plt.axis("off")
-    plt.title(f"Epoch {epoch}")
-    plt.imshow(np.transpose(grid.numpy(), (1, 2, 0)))
-    plt.tight_layout()
-    plt.savefig(os.path.join(outdir, "samples", f"epoch_{epoch:03d}.png"), dpi=160)
-    plt.close()
+    outpath = os.path.join(outdir, "samples", f"epoch_{epoch:03d}.png")
+    save_grid_image(samples, outpath, title=f"Epoch {epoch}", nrow=8)
 
 
 def save_checkpoints(G: Generator, D: Discriminator, outdir: str) -> None:
@@ -204,6 +198,12 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     ap.add_argument("--lr", type=float, default=2e-4)
     ap.add_argument("--outdir", type=str, default="outputs")
     ap.add_argument("--seed", type=int, default=42)
+    ap.add_argument(
+        "--num-workers",
+        type=int,
+        default=2,
+        help="DataLoader worker processes (default: 2; use 0 on constrained/CI machines)",
+    )
     args = ap.parse_args(argv)
 
     if args.epochs < 1:
@@ -214,6 +214,8 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         ap.error(f"--z-dim must be >= 1, got {args.z_dim}")
     if args.lr <= 0:
         ap.error(f"--lr must be > 0, got {args.lr}")
+    if args.num_workers < 0:
+        ap.error(f"--num-workers must be >= 0, got {args.num_workers}")
 
     return args
 
@@ -228,14 +230,20 @@ def main() -> None:
 
     train_ds, img_ch, img_size = build_dataset(args.dataset)
     loader = DataLoader(
-        train_ds, batch_size=args.batch_size, shuffle=True, num_workers=2, pin_memory=True
+        train_ds,
+        batch_size=args.batch_size,
+        shuffle=True,
+        num_workers=args.num_workers,
+        pin_memory=True,
     )
 
     dev = device()
     G = Generator(z_dim=args.z_dim, img_ch=img_ch, img_size=img_size).to(dev)
     D = Discriminator(img_ch=img_ch, img_size=img_size).to(dev)
 
-    crit = nn.BCELoss()
+    # BCEWithLogitsLoss combines Sigmoid + BCELoss in one numerically stable op;
+    # Discriminator now outputs raw logits (no Sigmoid) to pair with it.
+    crit = nn.BCEWithLogitsLoss()
     optG = torch.optim.Adam(G.parameters(), lr=args.lr, betas=(0.5, 0.999))
     optD = torch.optim.Adam(D.parameters(), lr=args.lr, betas=(0.5, 0.999))
 
