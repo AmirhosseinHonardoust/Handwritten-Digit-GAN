@@ -9,6 +9,12 @@ source .venv/bin/activate  # Windows: .venv\Scripts\activate
 pip install -r requirements-dev.txt
 ```
 
+For an exact reproduction of the environment CI uses (Linux, pinned transitive
+deps), install from `requirements-lock.txt` instead:
+```bash
+pip install -r requirements-lock.txt
+```
+
 ## Before opening a PR
 Run the same quality gate CI runs:
 ```bash
