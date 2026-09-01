@@ -1,7 +1,8 @@
 """Generate random samples and a latent-space interpolation from a trained Generator.
 
 Usage:
-    python src/sample.py --model outputs/G_last.pth --dataset mnist --outdir outputs
+    digit-gan-sample --model outputs/G_last.pth --dataset mnist --outdir outputs
+    # or: python -m digit_gan.sample --model outputs/G_last.pth ...
 """
 
 from __future__ import annotations
@@ -11,8 +12,8 @@ import os
 
 import torch
 
-from train_gan import Generator
-from viz import save_grid_image
+from .models import Generator
+from .viz import save_grid_image
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:

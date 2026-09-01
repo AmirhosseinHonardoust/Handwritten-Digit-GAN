@@ -9,13 +9,13 @@ test in test_integration_mnist.py.
 
 from unittest.mock import patch
 
-import train_gan
+from digit_gan import data
 
 
 def test_build_dataset_mnist_wiring():
-    with patch("train_gan.datasets.MNIST") as mock_mnist:
+    with patch("digit_gan.data.datasets.MNIST") as mock_mnist:
         mock_mnist.return_value = "fake-mnist-dataset"
-        ds, img_ch, img_size = train_gan.build_dataset("mnist")
+        ds, img_ch, img_size = data.build_dataset("mnist")
 
     assert ds == "fake-mnist-dataset"
     assert (img_ch, img_size) == (1, 28)
@@ -26,9 +26,9 @@ def test_build_dataset_mnist_wiring():
 
 
 def test_build_dataset_cifar10_wiring():
-    with patch("train_gan.datasets.CIFAR10") as mock_cifar:
+    with patch("digit_gan.data.datasets.CIFAR10") as mock_cifar:
         mock_cifar.return_value = "fake-cifar-dataset"
-        ds, img_ch, img_size = train_gan.build_dataset("cifar10")
+        ds, img_ch, img_size = data.build_dataset("cifar10")
 
     assert ds == "fake-cifar-dataset"
     assert (img_ch, img_size) == (3, 32)

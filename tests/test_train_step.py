@@ -6,11 +6,10 @@ import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader, TensorDataset
 
-import train_gan
-from train_gan import (
-    Discriminator,
-    Generator,
-    device,
+from digit_gan import train as train_gan
+from digit_gan.data import device
+from digit_gan.models import Discriminator, Generator
+from digit_gan.train import (
     parse_args,
     save_checkpoints,
     train_one_epoch,

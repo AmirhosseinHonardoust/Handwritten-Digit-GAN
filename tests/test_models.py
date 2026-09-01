@@ -1,6 +1,6 @@
 import torch
 
-from train_gan import Discriminator, Generator
+from digit_gan.models import Discriminator, Generator
 
 
 def test_generator_mnist_output_shape():

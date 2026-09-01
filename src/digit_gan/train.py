@@ -1,8 +1,9 @@
 """Train a DCGAN on MNIST (default) or CIFAR-10.
 
 Usage:
-    python src/train_gan.py --dataset mnist --epochs 20 --batch-size 128 \
+    digit-gan-train --dataset mnist --epochs 20 --batch-size 128 \
         --z-dim 100 --outdir outputs
+    # or: python -m digit_gan.train --dataset mnist ...
 """
 
 from __future__ import annotations
@@ -14,107 +15,12 @@ import matplotlib.pyplot as plt
 import numpy as np
 import torch
 import torch.nn as nn
-from torch.utils.data import DataLoader, Dataset
-from torchvision import datasets, transforms
+from torch.utils.data import DataLoader
 from tqdm import tqdm
 
-from viz import save_grid_image
-
-
-class Generator(nn.Module):
-    """DCGAN generator: maps a latent vector z to an image."""
-
-    def __init__(self, z_dim: int = 100, img_ch: int = 1, img_size: int = 28) -> None:
-        super().__init__()
-        self.img_ch = img_ch
-        self.img_size = img_size
-        base = 64
-        if img_size == 28:
-            self.net = nn.Sequential(
-                nn.ConvTranspose2d(z_dim, base * 4, 7, 1, 0, bias=False),
-                nn.BatchNorm2d(base * 4),
-                nn.ReLU(True),
-                nn.ConvTranspose2d(base * 4, base * 2, 4, 2, 1, bias=False),
-                nn.BatchNorm2d(base * 2),
-                nn.ReLU(True),
-                nn.ConvTranspose2d(base * 2, img_ch, 4, 2, 1, bias=False),
-                nn.Tanh(),
-            )
-        else:
-            self.net = nn.Sequential(
-                nn.ConvTranspose2d(z_dim, base * 4, 4, 1, 0, bias=False),
-                nn.BatchNorm2d(base * 4),
-                nn.ReLU(True),
-                nn.ConvTranspose2d(base * 4, base * 2, 4, 2, 1, bias=False),
-                nn.BatchNorm2d(base * 2),
-                nn.ReLU(True),
-                nn.ConvTranspose2d(base * 2, base, 4, 2, 1, bias=False),
-                nn.BatchNorm2d(base),
-                nn.ReLU(True),
-                nn.ConvTranspose2d(base, img_ch, 4, 2, 1, bias=False),
-                nn.Tanh(),
-            )
-
-    def forward(self, z: torch.Tensor) -> torch.Tensor:
-        return self.net(z)
-
-
-class Discriminator(nn.Module):
-    """DCGAN discriminator: classifies an image as real or fake."""
-
-    def __init__(self, img_ch: int = 1, img_size: int = 28) -> None:
-        super().__init__()
-        base = 64
-        if img_size == 28:
-            self.net = nn.Sequential(
-                nn.Conv2d(img_ch, base, 4, 2, 1, bias=False),
-                nn.LeakyReLU(0.2, inplace=True),
-                nn.Conv2d(base, base * 2, 4, 2, 1, bias=False),
-                nn.BatchNorm2d(base * 2),
-                nn.LeakyReLU(0.2, inplace=True),
-                nn.Flatten(),
-                nn.Linear((base * 2) * 7 * 7, 1),
-            )
-        else:
-            self.net = nn.Sequential(
-                nn.Conv2d(img_ch, base, 4, 2, 1, bias=False),
-                nn.LeakyReLU(0.2, inplace=True),
-                nn.Conv2d(base, base * 2, 4, 2, 1, bias=False),
-                nn.BatchNorm2d(base * 2),
-                nn.LeakyReLU(0.2, inplace=True),
-                nn.Conv2d(base * 2, base * 4, 4, 2, 1, bias=False),
-                nn.BatchNorm2d(base * 4),
-                nn.LeakyReLU(0.2, inplace=True),
-                nn.Flatten(),
-                nn.Linear((base * 4) * 4 * 4, 1),
-            )
-
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        """Return raw logits (no sigmoid); pair with ``nn.BCEWithLogitsLoss``."""
-        return self.net(x)
-
-
-def device() -> torch.device:
-    return torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-
-def build_dataset(dataset: str) -> tuple[Dataset, int, int]:
-    """Load the requested dataset, downloading it under ``data/`` if needed.
-
-    Returns (dataset, img_channels, img_size).
-    """
-    if dataset == "mnist":
-        tfm = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.5,), (0.5,))])
-        train_ds = datasets.MNIST(root="data", train=True, download=True, transform=tfm)
-        return train_ds, 1, 28
-    tfm = transforms.Compose(
-        [
-            transforms.ToTensor(),
-            transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
-        ]
-    )
-    train_ds = datasets.CIFAR10(root="data", train=True, download=True, transform=tfm)
-    return train_ds, 3, 32
+from .data import build_dataset, device
+from .models import Discriminator, Generator
+from .viz import save_grid_image
 
 
 def save_loss_curves(G_losses: list[float], D_losses: list[float], outpath: str) -> None:
@@ -242,7 +148,7 @@ def main() -> None:
     D = Discriminator(img_ch=img_ch, img_size=img_size).to(dev)
 
     # BCEWithLogitsLoss combines Sigmoid + BCELoss in one numerically stable op;
-    # Discriminator now outputs raw logits (no Sigmoid) to pair with it.
+    # Discriminator outputs raw logits (no Sigmoid) to pair with it.
     crit = nn.BCEWithLogitsLoss()
     optG = torch.optim.Adam(G.parameters(), lr=args.lr, betas=(0.5, 0.999))
     optD = torch.optim.Adam(D.parameters(), lr=args.lr, betas=(0.5, 0.999))

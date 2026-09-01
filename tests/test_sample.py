@@ -3,12 +3,13 @@ import sys
 
 import torch
 
-import sample
-import train_gan
+from digit_gan import sample
+from digit_gan import train as train_gan
+from digit_gan.models import Discriminator, Generator
 
 
 def _make_checkpoint(tmp_path, z_dim=10, img_ch=1, img_size=28):
-    G = train_gan.Generator(z_dim=z_dim, img_ch=img_ch, img_size=img_size)
+    G = Generator(z_dim=z_dim, img_ch=img_ch, img_size=img_size)
     path = tmp_path / "G_test.pth"
     torch.save(G.state_dict(), path)
     return str(path)
@@ -24,7 +25,7 @@ def test_parse_args_requires_model():
 def test_load_generator_roundtrip(tmp_path):
     ckpt_path = _make_checkpoint(tmp_path, z_dim=10, img_ch=1, img_size=28)
     G = sample.load_generator(ckpt_path, z_dim=10, img_ch=1, img_size=28)
-    assert isinstance(G, train_gan.Generator)
+    assert isinstance(G, Generator)
     assert not G.training  # load_generator() must call .eval()
     z = torch.randn(2, 10, 1, 1)
     with torch.no_grad():
@@ -33,14 +34,14 @@ def test_load_generator_roundtrip(tmp_path):
 
 
 def test_save_random_grid_writes_file(tmp_path):
-    G = train_gan.Generator(z_dim=10, img_ch=1, img_size=28)
+    G = Generator(z_dim=10, img_ch=1, img_size=28)
     G.eval()
     sample.save_random_grid(G, z_dim=10, outdir=str(tmp_path))
     assert (tmp_path / "samples_grid.png").exists()
 
 
 def test_save_interpolation_writes_file(tmp_path):
-    G = train_gan.Generator(z_dim=10, img_ch=1, img_size=28)
+    G = Generator(z_dim=10, img_ch=1, img_size=28)
     G.eval()
     sample.save_interpolation(G, z_dim=10, outdir=str(tmp_path))
     assert (tmp_path / "interpolation.png").exists()
@@ -76,8 +77,8 @@ def test_sample_main_loads_original_repo_checkpoint_format(tmp_path, monkeypatch
     """Regression guard: sample.py must keep loading plain state_dict checkpoints
     (the format every checkpoint saved by save_checkpoints() uses), not just
     checkpoints saved in this test file's own format."""
-    G = train_gan.Generator(z_dim=100, img_ch=1, img_size=28)
-    D = train_gan.Discriminator(img_ch=1, img_size=28)
+    G = Generator(z_dim=100, img_ch=1, img_size=28)
+    D = Discriminator(img_ch=1, img_size=28)
     train_gan.save_checkpoints(G, D, str(tmp_path))
 
     outdir = tmp_path / "out2"
