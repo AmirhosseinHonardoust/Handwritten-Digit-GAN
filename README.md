@@ -1,6 +1,7 @@
 <div align="center">
 
 # Handwritten Digit GAN
+<img width="1672" height="941" alt="Handwritten-Digit-GAN" src="https://github.com/user-attachments/assets/051491dd-11dd-4f7b-b71b-85690c8f7b51" />
 
 ![Python](https://img.shields.io/badge/Python-3.9%2B-blue)
 ![PyTorch](https://img.shields.io/badge/PyTorch-DCGAN-orange)
